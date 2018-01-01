@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Puzzler" />
+		<Option pch_mode="2" />
+		<Option compiler="microsoft_visual_c_2008_x64" />
+		<Build>
+			<Target title="VC++ Console">
+				<Option output="../bin/Puzzler" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj" />
+				<Option type="1" />
+				<Option compiler="microsoft_visual_c_2008_x64" />
+				<Compiler>
+					<Add option="/W4" />
+					<Add option="/wd4100" />
+				</Compiler>
+			</Target>
+			<Target title="GCC Console">
+				<Option output="../bin/Puzzler" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-Wall" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Linker>
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="ole32" />
+		</Linker>
+		<Unit filename="Bitmap.h" />
+		<Unit filename="Bitmap_Loader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Bitmap_Loader_GdiPlus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Bitmap_Loader_WIC.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Bitmap_Shrinker.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1.h" />
+		<Unit filename="FLib1_File_Config.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_File_Config_Helper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_List.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_Menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_Path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_String.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FLib1_Window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Main.h" />
+		<Unit filename="Main_FileList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Main_Settings.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Main_Start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Main_Window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle.h" />
+		<Unit filename="Puzzle_Assembler.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Board.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Builder.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Drag.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Pixel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Plugin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Puzzle_Struct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="StdInc.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
