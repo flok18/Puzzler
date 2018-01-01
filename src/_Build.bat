@@ -18,6 +18,8 @@ Set ObjDir=..\obj
 Set BinDir=..\bin
 
 
+if not exist "%ObjDir%" md "%ObjDir%"
+
 RC.exe /fo"%ObjDir%\Resource.res" /nologo Resource.rc
 CVTRES.exe /MACHINE:X64 /NOLOGO /OUT:"%ObjDir%\Resource.obj" %ObjDir%\Resource.res
 Set ObjList="%ObjDir%\Resource.obj"
