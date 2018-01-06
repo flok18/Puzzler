@@ -31,6 +31,7 @@
 			<Add library="user32" />
 			<Add library="gdi32" />
 			<Add library="ole32" />
+			<Add library="shell32" />
 		</Linker>
 		<Unit filename="Bitmap.h" />
 		<Unit filename="Bitmap_Loader.c">

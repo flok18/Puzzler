@@ -6,6 +6,9 @@
 #include "Main.h"
 
 
+#include <Shellapi.h>
+
+
 int  WIN_PIC_SIZE_SPACE_X   = 4;
 int  WIN_PIC_SIZE_SPACE_Y   = 4;
 
@@ -33,13 +36,13 @@ static BOOL MainWindow_Start_Puzzle(const char* FromFile)
 	static const char*   __static_Start_Puzzle_Last_File   = NULL;
 	BOOL                 RetStatus                         = FALSE;
 	Struct_Bitmap_Data   Orig_Bitmap;
-	
-	
+
+
 	if (FromFile)
 	{
 		__static_Start_Puzzle_Last_File = FromFile;
 	}
-	
+
 	if (__static_Start_Puzzle_Last_File)
 	{
 		Bitmap_Init(&Orig_Bitmap);
@@ -54,10 +57,15 @@ static BOOL MainWindow_Start_Puzzle(const char* FromFile)
 
 		Bitmap_Release(&Orig_Bitmap);
 	}
+	else
+    {
+        // No Pics... Also OK...
+        RetStatus = TRUE;
+    }
 
 	Puzzle_Draw_Board(&MyPuzzle);
 	Puzz_Plugin_Start();
-	
+
 	return RetStatus;
 }
 
@@ -95,19 +103,21 @@ static void MainWindow_Button_Solve(HWND hwnd)
 	RECT                WindowInterior;
 	Struct_PieceChain*  AkChain;
 
-	
+
 	while (MyPuzzle.nPieceChain > 1)
 	{
 		Puzzle_Assemble_Chains(&MyPuzzle, 0, 1);
 	}
 
 	AkChain = MyPuzzle.aPieceChain;
+    if (AkChain)
+    {
+        GetClientRect(hwnd, &WindowInterior);
 
-	GetClientRect(hwnd, &WindowInterior);
+        AkChain->Position_X = WindowInterior.right  / 2 - AkChain->Image_Size_X / 2;
+        AkChain->Position_Y = WindowInterior.bottom / 2 - AkChain->Image_Size_Y / 2;
+    }
 
-	AkChain->Position_X = WindowInterior.right  / 2 - AkChain->Image_Size_X / 2;
-	AkChain->Position_Y = WindowInterior.bottom / 2 - AkChain->Image_Size_Y / 2;
-	
 	Puzzle_Draw_Board(&MyPuzzle);
 	InvalidateRect(hwnd, NULL, FALSE);
 }
@@ -125,11 +135,11 @@ static void MainWindow_Button_Next_Picture(HWND hwnd)
 
 
 	Image_File = FileList_Get_Random_File();
-	
-	if (MainWindow_Start_Puzzle(Image_File) == FALSE)
-	{
-		MsgBox_Error(hwnd, "Kann Datei nicht laden...");
-	}
+
+    if (MainWindow_Start_Puzzle(Image_File) == FALSE)
+    {
+        MsgBox_Error(hwnd, "Kann Datei nicht laden...");
+    }
 
 	InvalidateRect(hwnd, NULL, FALSE);
 }
@@ -180,6 +190,34 @@ static void MainWindow_Menu_Click(HWND hwnd, int MenuID)
 	}
 }
 
+
+void MainWindow_DropFileEvent(HWND hwnd, HDROP DropHandle)
+{
+	UINT   NumFiles;
+	UINT   ii;
+	char   Buffer[MAX_PATH];
+    BOOL   RestartAfterLoad     = FALSE;
+
+
+    if (FileList_Get_Count() == 0) RestartAfterLoad = TRUE;
+
+	NumFiles = DragQueryFile(DropHandle, 0xFFFFFFFF, NULL, 0);
+
+	for (ii = 0; ii < NumFiles; ++ii)
+	{
+		if (DragQueryFile(DropHandle, ii, Buffer, sizeof(Buffer)))
+		{
+		    FileList_Add(Buffer);
+		}
+	}
+
+	DragFinish(DropHandle);
+
+	if (RestartAfterLoad)
+    {
+        MainWindow_Button_Next_Picture(hwnd);
+    }
+}
 
 static void MainWindow_Resize(HWND hwnd, int GrX, int GrY)
 {
@@ -245,6 +283,10 @@ static LRESULT CALLBACK MainWindow_WindowProc(HWND hwnd, UINT message, WPARAM wP
 		case WM_TIMER:
 			Puzz_Plugin_Tick_Up();
 			break;
+
+		case WM_DROPFILES:
+			MainWindow_DropFileEvent(hwnd, (HDROP)wParam);
+			break;
     }
 
     return DefWindowProc(hwnd , message , wParam , lParam);
@@ -258,17 +300,20 @@ void MainWindow_Create(void)
 
 	WindowClass_Register(MainWindow_ClassName, Main_hInst, MainWindow_WindowProc, FALSE, TRUE);
 
-	MainWindow_Handle = Window_Create(NULL, 0, 0, 640, 480, WS_OVERLAPPEDWINDOW | WS_MAXIMIZE, 0, " Puzzler");
+	MainWindow_Handle = Window_Create(NULL, 0, 0, 640, 480, WS_OVERLAPPEDWINDOW | WS_MAXIMIZE, 0,
+                                      " Puzzler  -  Drag'n'Drop Pictures to this Window to Play...");
 
     Menu_Start(MainWindow_Handle);
-		Menu_Add("Next Picture",        101);
-		Menu_Add("Move Pieces Inside",  102);
-		Menu_Add("Solve",               103);
-		Menu_Add("Reset",               104);
+		Menu_Add("  Next Picture  ",        101);
+		Menu_Add("  Move Pieces Inside  ",  102);
+		Menu_Add("  Solve  ",               103);
+		Menu_Add("  Reset  ",               104);
     Menu_End();
 
 	Window_SetIcon(MainWindow_Handle, 8001);
 	ShowWindow(MainWindow_Handle, SW_MAXIMIZE);
+
+	DragAcceptFiles(MainWindow_Handle, TRUE);
 }
 
 

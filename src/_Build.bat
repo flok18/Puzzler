@@ -30,7 +30,7 @@ for %%I in (Main_*.c)   do Call :AddObj %%I
 for %%I in (Puzzle_*.c) do Call :AddObj %%I
 
 Set ObjList=%ObjList% kernel32.lib gdi32.lib user32.lib
-Set ObjList=%ObjList% ole32.lib comdlg32.lib winmm.lib
+Set ObjList=%ObjList% ole32.lib comdlg32.lib shell32.lib
 
 LINK.exe /nologo /MANIFEST:NO %ObjList% /Subsystem:windows /OUT:"%BinDir%\Puzzler.exe"
 

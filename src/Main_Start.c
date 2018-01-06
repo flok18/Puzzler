@@ -23,20 +23,12 @@ void Main_Entry(void)
 	}
 
 
-	if (FileList_Get_Count() > 0)
-    {
+    MainWindow_Create();
 
-        MainWindow_Create();
+    MessageLoop();
 
-        MessageLoop();
+    MainWindow_Release();
 
-        MainWindow_Release();
-
-    }
-    else
-    {
-        MsgBox_Error(NULL, "Bitte eine Datei oder einen Ordner dem Programm per Kommandozeile mitgeben...");
-    }
 
     FileList_Release();
 	Settings_Free();
