@@ -38,21 +38,22 @@ static void Print_All_GUIDs(void)
 
 BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip_Y)
 {
-    BOOL                    Return_Status     = FALSE;
+    BOOL                    Return_Status           = FALSE;
     HRESULT                 hr;
     wchar_t                 FileNameU[MAX_PATH];
-    IWICImagingFactory*     m_pIWICFactory    = NULL;
-    IWICBitmapDecoder*      pDecoder          = NULL;
-    IWICBitmapFrameDecode*  pFrame            = NULL;
-    IWICBitmapSource*       pSource           = NULL;
-    UINT                    uiWidth           = 0;
-    UINT                    uiHeight          = 0;
-    UINT                    cbStride          = 0;
-    UINT                    cbImage           = 0;
+    IWICImagingFactory*     m_pIWICFactory          = NULL;
+    IWICBitmapDecoder*      pDecoder                = NULL;
+    IWICBitmapFrameDecode*  pFrame                  = NULL;
+    IWICBitmapSource*       pSource                 = NULL;
+    UINT                    uiWidth                 = 0;
+    UINT                    uiHeight                = 0;
+    UINT                    cbStride                = 0;
+    UINT                    cbImage                 = 0;
     WICPixelFormatGUID      pixelFormat;
-    IWICFormatConverter*    pConverter        = NULL;
-    IWICBitmapSource*       pSourceRgb        = NULL;
-    BYTE*                   ImagePixels       = NULL;
+    IWICFormatConverter*    pConverter              = NULL;
+    IWICBitmapSource*       pSourceRgb              = NULL;
+    BOOL                    HasColorsConverted      = FALSE;
+    BYTE*                   ImagePixels             = NULL;
 
 
 #ifdef __PRINT_GUIDs
@@ -89,8 +90,8 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
                             // Do we need to Convert...
                             if (IsEqualGUID(&pixelFormat, &MY_GUID_WICPixelFormat32bppBGR))
                             {
-                                // Achtung: Bei Freigeben undbedingt Nullen bzw. auf NULL pruefen.
-                                pSourceRgb = pSource;
+                                pSourceRgb         = pSource;
+								HasColorsConverted = FALSE;
                             }
                             else
                             {
@@ -104,7 +105,11 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
                                     {
                                         // Store the converted bitmap as IWICBitmapSource
                                         hr = pConverter->lpVtbl->QueryInterface(pConverter, &MY_IID_IWICBitmapSource, (void**)(&pSourceRgb));
-                                        if (FAILED(hr))
+                                        if (SUCCEEDED(hr))
+										{
+											HasColorsConverted = TRUE;
+										}
+										else
                                         {
                                             pSourceRgb = NULL;
                                         }
@@ -118,7 +123,7 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
                             {
                                 cbStride  = uiWidth * sizeof(DWORD);
                                 cbImage   = cbStride * uiHeight;
-								
+
 								if (Do_Flip_Y)
 								{
 									// Allocate Buffer
@@ -133,7 +138,7 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
 											Return_Status = TRUE;
 										}
 										free(ImagePixels);
-									}									
+									}
 								}
 								else
 								{
@@ -147,10 +152,13 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
 										{
 											Return_Status = TRUE;
 										}
-									}									
+									}
 								}
 
-                                COM_PTR_RELEASE(pSourceRgb);
+								if (HasColorsConverted)
+								{
+									COM_PTR_RELEASE(pSourceRgb);
+								}
                             }
                         }
                     }
@@ -168,7 +176,7 @@ BOOL Bitmap_WIC_Load(const char* FileName, Struct_Bitmap_Data* Bmp, BOOL Do_Flip
 	}
 
 	CoUninitialize();
-	
+
     return Return_Status;
 }
 
